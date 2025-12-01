@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigating the Global Refugee Crisis</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>Loading data...</div>
+    </div>
+
+    <div id="progress-indicator">1 / 9</div>
+
+    <div id="slideshow-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide" data-slide="1">
+            <h1>Navigating the Global Refugee Crisis:<br>Understanding the Human Flow</h1>
+            <h2>Tracing Human Displacement: Analyzing Global Refugee Flows<br>and Resettlement Patterns (2000–2023)</h2>
+            <div class="team-info">
+                <h3>Team Members</h3>
+                <ul>
+                    <li>Amaan Elahi - ae2950</li>
+                    <li>Aayush Anand - aa13015</li>
+                    <li>Md Aamir Achhava - ma8616</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: Problem -->
+        <div class="slide text-slide" data-slide="2">
+            <h2>Problem & Context</h2>
+            <div style="overflow-y: auto; height: 100%;">
+                <h3 style="color: #D84315; margin-top: 20px;">What problem are you exploring?</h3>
+                <p>We are exploring the problem of <strong>forced human displacement</strong>, focusing on global refugee and asylum trends. Millions of people are displaced each year due to conflict, persecution, and climate-related crises, yet the scale, direction, and demographic impact of these movements are often hard to grasp through raw numbers alone. Our goal is to make these patterns visible and interpretable through data visualization.</p>
+
+                <h3 style="color: #D84315; margin-top: 20px;">Why is this interesting and worthwhile?</h3>
+                <p>Understanding refugee movements is crucial for both humanitarian and policy reasons. Visualizing this data helps reveal <strong>which regions are most affected</strong>, <strong>how displacement evolves over time</strong>, and <strong>how host countries respond</strong>. By transforming statistical data into interactive visual insights, we aim to foster awareness, empathy, and data-driven discussions about global migration and humanitarian response.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Context -->
+        <div class="slide text-slide" data-slide="3">
+            <h2>Understanding the Context</h2>
+            <div style="overflow-y: auto; height: 100%;">
+                <p>The refugee crisis is one of the most pressing global challenges of the 21st century. According to UNHCR, over 110 million people were forcibly displaced worldwide in 2023 — the highest number ever recorded. Behind these statistics are complex geopolitical, social, and environmental factors.</p>
+
+                <p>Our project situates this data within that context, helping readers understand not only <strong>where displacement occurs</strong>, but <strong>why it happens</strong> and <strong>how it changes over time</strong>.</p>
+
+                <h3 style="color: #D84315; margin-top: 30px;">Data Source</h3>
+                <p>The data originates from the <strong>UNHCR Refugee Population Statistics Database</strong> and is publicly available via Kaggle. It is collected and maintained by the United Nations High Commissioner for Refugees through official government reports, administrative data, and UNHCR's field offices.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Q5 - Part 1 -->
+        <div class="slide question-slide" data-slide="4">
+            <div class="slide-header">
+                <h2>Q5: Are there seasonal or monthly trends in asylum seeker movements?</h2>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart-q5-global"></div>
+                <div id="chart-q5-europe" style="margin-top: 30px;"></div>
+            </div>
+
+            <div class="interpretation-panel">
+                <h3>Key Observations</h3>
+
+                <h4>1. Global Monthly Trend</h4>
+                <p>Global asylum applications show a clear seasonal cycle:</p>
+                <ul>
+                    <li><strong>Lowest</strong> in December–February</li>
+                    <li><strong>Steady rise</strong> from March–July</li>
+                    <li><strong>Peak</strong> in August–October, then drop in November–December</li>
+                </ul>
+                <p>This indicates that global movement is partly shaped by travel conditions and weather, especially in the Northern Hemisphere.</p>
+
+                <h4>2. Europe-Only Trend</h4>
+                <p>Seasonality is stronger in Europe:</p>
+                <ul>
+                    <li>Winter decline is much sharper</li>
+                    <li>Summer peaks are more pronounced</li>
+                    <li>Europe's geography (Mediterranean crossings, cold winters) strongly affects mobility</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Q5 - Part 2 (5-Year Windows) -->
+        <div class="slide question-slide" data-slide="5">
+            <div class="slide-header">
+                <h2>Q5: Seasonal Trends - 5-Year Window Analysis</h2>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart-q5-5year"></div>
+            </div>
+
+            <div class="interpretation-panel">
+                <h3>5-Year Window Trends</h3>
+                <p>The 5-year windows show how seasonality changes over time:</p>
+                <ul>
+                    <li><strong>Early periods (2000–2010)</strong>: stable, mild seasonality</li>
+                    <li><strong>2010–2014</strong>: rise due to Arab Spring & Syrian conflict</li>
+                    <li><strong>2015–2019</strong>: very high levels; seasonality weakens during crisis</li>
+                    <li><strong>2020–2024</strong>: declines due to COVID-19 but seasonality reappears</li>
+                </ul>
+
+                <h4>Key Insight</h4>
+                <p><strong>Major conflicts disrupt seasonal patterns entirely.</strong> When geopolitical crises occur, people flee regardless of weather conditions or travel barriers.</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Q5 - Part 3 (3-Year Windows) -->
+        <div class="slide question-slide" data-slide="6">
+            <div class="slide-header">
+                <h2>Q5: Seasonal Trends - 3-Year Window Analysis</h2>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart-q5-3year"></div>
+            </div>
+
+            <div class="interpretation-panel">
+                <h3>3-Year Window Trends</h3>
+                <p>3-year windows reveal more granular detail:</p>
+                <ul>
+                    <li><strong>Crisis years</strong> show consistently high values across all months</li>
+                    <li><strong>Post-crisis years</strong> reintroduce the summer peak and winter dip</li>
+                    <li>Shorter windows highlight transitions due to policies and conflicts</li>
+                </ul>
+
+                <h3>Overall Insights</h3>
+                <ul>
+                    <li><strong>Seasonality exists</strong>, but only when geopolitical conditions are stable</li>
+                    <li><strong>Conflicts override weather effects</strong> — people flee in all seasons</li>
+                    <li><strong>Europe is more sensitive</strong> to seasonal travel barriers</li>
+                    <li>Seasonal dips (winter) should <strong>not be mistaken for long-term decline</strong></li>
+                    <li><strong>Forecasting models</strong> must consider both seasonality and conflict shocks</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: Q6 -->
+        <div class="slide question-slide" data-slide="7">
+            <div class="slide-header">
+                <h2>Q6: Who are these displaced individuals in terms of age and gender?</h2>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart-q6-demographics"></div>
+            </div>
+
+            <div class="interpretation-panel">
+                <h3>Demographic Analysis</h3>
+
+                <h4>1. Global Gender Balance</h4>
+                <p>The global displaced population is almost evenly split:</p>
+                <ul>
+                    <li><strong>Male:</strong> ~51%</li>
+                    <li><strong>Female:</strong> ~49%</li>
+                </ul>
+                <p>This indicates that displacement impacts both genders nearly equally, contradicting the assumption that refugees are predominantly male.</p>
+
+                <h4>2. Age Group Distribution</h4>
+                <p>Across all displaced individuals:</p>
+                <ul>
+                    <li><strong>Children (0–17):</strong> ~47% — Nearly half are minors</li>
+                    <li><strong>Adults (18–59):</strong> ~48% — Largest economically-active group</li>
+                    <li><strong>Elderly (60+):</strong> ~5% — Smallest but vulnerable group</li>
+                </ul>
+                <p>This highlights that displacement overwhelmingly affects young populations.</p>
+
+                <h4>3. Implications</h4>
+                <ul>
+                    <li>Nearly <strong>half are children</strong>, requiring schooling, protection, and family services</li>
+                    <li><strong>Balanced gender distribution</strong> means support systems must serve men and women equally</li>
+                    <li><strong>Elderly female majority</strong> suggests need for targeted healthcare</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Q7 - Part 1 -->
+        <div class="slide question-slide" data-slide="8">
+            <div class="slide-header">
+                <h2>Q7: Which countries shoulder the greatest responsibility in hosting refugees?</h2>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart-q7-refugees"></div>
+            </div>
+
+            <div class="interpretation-panel">
+                <h3>Top Refugee-Hosting Countries</h3>
+
+                <h4>1. Pakistan and Iran — Largest Long-Term Hosts</h4>
+                <p>Across all years in the dataset, <strong>Pakistan</strong> and <strong>Iran</strong> host the largest cumulative numbers of refugees.</p>
+                <p>This is primarily due to:</p>
+                <ul>
+                    <li>The prolonged displacement of Afghans since the 1980s</li>
+                    <li>Geographic proximity to major conflict zones</li>
+                    <li>Large-scale, multi-decade refugee inflows</li>
+                </ul>
+
+                <h4>2. United States and Germany — Major High-Income Hosts</h4>
+                <p>The <strong>United States</strong> and <strong>Germany</strong> also shoulder substantial responsibility:</p>
+                <ul>
+                    <li>U.S. hosts large numbers through resettlement and asylum programs</li>
+                    <li>Germany's totals surge during 2010–2015 due to Syrian crisis</li>
+                </ul>
+
+                <h4>3. Key African Hosts</h4>
+                <p>Several low-income African countries host large refugee populations:</p>
+                <ul>
+                    <li>Democratic Republic of the Congo</li>
+                    <li>Sudan</li>
+                    <li>Tanzania</li>
+                </ul>
+                <p>These countries carry heavy humanitarian burdens relative to GDP.</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Q7 - Part 2 -->
+        <div class="slide question-slide" data-slide="9">
+            <div class="slide-header">
+                <h2>Q7: Asylum-Seeker Hosting (continued)</h2>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart-q7-asylum"></div>
+            </div>
+
+            <div class="interpretation-panel">
+                <h3>Asylum Application Patterns</h3>
+
+                <h4>Comparison: Refugees vs. Asylum Seekers</h4>
+                <p>The distribution of asylum applications differs from refugee hosting:</p>
+
+                <ul>
+                    <li><strong>United States</strong> receives the most asylum applications globally</li>
+                    <li><strong>Germany</strong> becomes a major destination post-2015</li>
+                    <li><strong>France, United Kingdom, Canada</strong> appear prominently</li>
+                </ul>
+
+                <h4>Key Distinction</h4>
+                <p><strong>Refugee hosting</strong> (previous chart) reflects who currently lives in a country, often shaped by:</p>
+                <ul>
+                    <li>Geographic proximity to conflict zones</li>
+                    <li>Historical ties and regional obligations</li>
+                </ul>
+
+                <p><strong>Asylum applications</strong> (this chart) reflect who is actively seeking protection, influenced by:</p>
+                <ul>
+                    <li>Economic opportunities in destination countries</li>
+                    <li>Existing diaspora communities</li>
+                    <li>Asylum policies and resettlement programs</li>
+                </ul>
+
+                <h4>Conclusion</h4>
+                <p>Low-income countries near conflict zones host the most refugees, while high-income countries receive more asylum applications. This shows an unequal global burden-sharing system.</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Q7 - Part 3 (Geographic Distribution Map) -->
+        <div class="slide question-slide" data-slide="10">
+            <div class="slide-header">
+                <h2>Q7: Geographic Distribution of Refugee Hosting</h2>
+                <div style="margin-top: 5px; margin-bottom: -10px;">
+                    <label for="refugee-period-select" style="font-size: 14px; margin-right: 10px;">Select 5-Year Period:</label>
+                    <select id="refugee-period-select" style="padding: 5px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #8D6E63;">
+                        <option value="1950-1954">1950-1954</option>
+                        <option value="1955-1959">1955-1959</option>
+                        <option value="1960-1964">1960-1964</option>
+                        <option value="1965-1969">1965-1969</option>
+                        <option value="1970-1974">1970-1974</option>
+                        <option value="1975-1979">1975-1979</option>
+                        <option value="1980-1984">1980-1984</option>
+                        <option value="1985-1989">1985-1989</option>
+                        <option value="1990-1994">1990-1994</option>
+                        <option value="1995-1999">1995-1999</option>
+                        <option value="2000-2004">2000-2004</option>
+                        <option value="2005-2009">2005-2009</option>
+                        <option value="2010-2014">2010-2014</option>
+                        <option value="2015-2019" selected>2015-2019</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart-q7-map"></div>
+            </div>
+
+            <div class="interpretation-panel">
+                <h3>Geographic Patterns</h3>
+
+                <h4>Regional Concentration</h4>
+                <p>The map reveals clear geographic patterns in refugee hosting:</p>
+                <ul>
+                    <li><strong>Middle East:</strong> Turkey, Iran, and Pakistan host the largest populations due to Syrian and Afghan displacement</li>
+                    <li><strong>Sub-Saharan Africa:</strong> Uganda, Ethiopia, Sudan, and Tanzania host substantial numbers from regional conflicts</li>
+                    <li><strong>Europe:</strong> Germany stands out as the major European host, primarily from the 2015-2016 refugee crisis</li>
+                </ul>
+
+                <h4>Proximity Matters</h4>
+                <p>Most refugees stay in neighboring countries:</p>
+                <ul>
+                    <li>Neighboring countries share language, culture, and family ties</li>
+                    <li>Geographic proximity allows for easier and safer travel</li>
+                    <li>Hope for eventual return home keeps refugees in the region</li>
+                </ul>
+
+                <h4>Burden on Low-Income Countries</h4>
+                <p>The darkest regions on the map are often:</p>
+                <ul>
+                    <li>Countries with limited resources and infrastructure</li>
+                    <li>Nations already facing their own economic challenges</li>
+                    <li>Regions that receive insufficient international support</li>
+                </ul>
+
+                <h4>Key Insight</h4>
+                <p><strong>The global refugee crisis is not distributed equally.</strong> Low- and middle-income countries bear a disproportionate share of the responsibility, highlighting the need for better international cooperation and support mechanisms.</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Q7 - Part 4 (Asylum Applications Map) -->
+        <div class="slide question-slide" data-slide="11">
+            <div class="slide-header">
+                <h2>Q7: Geographic Distribution of Asylum Applications</h2>
+                <div style="margin-top: 5px; margin-bottom: -10px;">
+                    <label for="asylum-period-select" style="font-size: 14px; margin-right: 10px;">Select 5-Year Period:</label>
+                    <select id="asylum-period-select" style="padding: 5px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #8D6E63;">
+                        <option value="2000-2004">2000-2004</option>
+                        <option value="2005-2009">2005-2009</option>
+                        <option value="2010-2014">2010-2014</option>
+                        <option value="2015-2019" selected>2015-2019</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart-q7-asylum-map"></div>
+            </div>
+
+            <div class="interpretation-panel">
+                <h3>Asylum Application Patterns</h3>
+
+                <h4>Key Differences from Refugee Hosting</h4>
+                <p>Asylum applications show different patterns than refugee hosting:</p>
+                <ul>
+                    <li><strong>High-Income Countries:</strong> United States, Germany, France, and UK receive the most applications</li>
+                    <li><strong>Economic Factors:</strong> Applications concentrate in wealthier nations with established asylum systems</li>
+                    <li><strong>Geographic Distance:</strong> Applicants often travel long distances to reach high-income destinations</li>
+                </ul>
+
+                <h4>Temporal Trends</h4>
+                <p>Use the dropdown to explore different time periods:</p>
+                <ul>
+                    <li><strong>2000-2004:</strong> Post-9/11 era with heightened security concerns</li>
+                    <li><strong>2005-2009:</strong> Iraq War displacement patterns</li>
+                    <li><strong>2010-2014:</strong> Arab Spring aftermath and Syrian conflict begins</li>
+                    <li><strong>2015-2019:</strong> Peak of Syrian refugee crisis, major influx to Europe</li>
+                </ul>
+
+                <h4>Policy Implications</h4>
+                <p>The geographic distribution reveals:</p>
+                <ul>
+                    <li>Wealthier countries attract more asylum seekers due to better opportunities</li>
+                    <li>Neighboring countries host refugees, distant countries process asylum claims</li>
+                    <li>Burden-sharing between hosting and processing needs better coordination</li>
+                </ul>
+
+                <h4>Key Insight</h4>
+                <p><strong>Proximity vs. Opportunity:</strong> Refugees stay near home hoping to return, while asylum seekers often seek long-term settlement in countries offering better futures.</p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusion -->
+        <div class="slide conclusion-slide" data-slide="12">
+            <h2>Conclusions & Key Findings</h2>
+            <div style="overflow-y: auto; height: 100%; padding: 20px;">
+                <h3>What We Learned</h3>
+                <ul>
+                    <li><strong>Seasonal patterns exist</strong> in asylum movements, but major conflicts override weather-related barriers</li>
+                    <li><strong>Nearly half of displaced individuals are children</strong>, emphasizing the need for child-focused humanitarian interventions</li>
+                    <li><strong>Gender distribution is balanced</strong>, but women face disproportionate protection risks</li>
+                    <li><strong>Low-income countries bear the greatest burden</strong> — Pakistan, Iran, DRC, Sudan, and Tanzania host millions despite limited resources</li>
+                    <li><strong>High-income countries receive more asylum applications</strong> but host fewer refugees overall</li>
+                </ul>
+
+                <h3>Policy Implications</h3>
+                <ul>
+                    <li>Global burden-sharing mechanisms need reform to support low-income host countries</li>
+                    <li>Seasonal patterns should inform resource allocation and border management</li>
+                    <li>Child protection services are critical — nearly half of displaced populations are minors</li>
+                    <li>Gender-sensitive interventions are essential for effective humanitarian response</li>
+                </ul>
+
+                <h3>Data Sources</h3>
+                <ul>
+                    <li><strong>UNHCR Refugee Population Statistics Database</strong></li>
+                    <li>Available via <a href="https://www.kaggle.com/datasets/unitednations/refugee-data" target="_blank">Kaggle</a></li>
+                    <li>Covers 2000–2023, including refugees, asylum seekers, IDPs, and stateless individuals</li>
+                </ul>
+
+                <p style="text-align: center; margin-top: 40px; font-size: 1.3em; color: #5D4037;">
+                    <strong>Thank you for exploring this critical humanitarian issue with us.</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <button id="prev-btn" class="nav-button">←</button>
+    <button id="next-btn" class="nav-button">→</button>
+
+    <script type="module" src="slideshow.js"></script>
+</body>
+</html>

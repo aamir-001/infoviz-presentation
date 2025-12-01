@@ -1,0 +1,377 @@
+/* Refugee Crisis Slideshow - Warm Earth Tones Theme */
+
+:root {
+  --earth-dark: #5D4037;
+  --earth-medium: #8D6E63;
+  --earth-light: #BCAAA4;
+  --terracotta: #D84315;
+  --sand: #EFEBE9;
+  --text-dark: #3E2723;
+  --text-light: #6D4C41;
+  --accent-orange: #FF6F00;
+  --accent-brown: #A1887F;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--sand) 0%, #FFF8E1 100%);
+  color: var(--text-dark);
+  overflow: hidden;
+  height: 100vh;
+}
+
+#slideshow-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide {
+  position: absolute;
+  width: 95%;
+  max-width: 1400px;
+  height: 90vh;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(93, 64, 55, 0.15);
+  padding: 40px 50px;
+  opacity: 0;
+  transition: opacity 500ms ease-in-out;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Title Slide */
+.slide.title-slide {
+  text-align: center;
+  justify-content: center;
+}
+
+.slide.title-slide h1 {
+  font-size: 3em;
+  color: var(--earth-dark);
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.slide.title-slide h2 {
+  font-size: 1.8em;
+  color: var(--terracotta);
+  font-weight: 400;
+  margin-bottom: 40px;
+}
+
+.team-info {
+  margin-top: 40px;
+  font-size: 1.1em;
+  color: var(--text-light);
+}
+
+.team-info li {
+  list-style: none;
+  margin: 10px 0;
+}
+
+/* Problem & Context Slides */
+.slide.text-slide h2 {
+  font-size: 2.2em;
+  color: var(--earth-dark);
+  margin-bottom: 30px;
+  border-bottom: 3px solid var(--terracotta);
+  padding-bottom: 15px;
+}
+
+.slide.text-slide p {
+  font-size: 1.15em;
+  line-height: 1.8;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+/* Question Slides - Two Column Layout */
+.slide.question-slide {
+  display: grid;
+  grid-template-columns: 65% 35%;
+  gap: 20px;
+  padding: 30px 40px;
+}
+
+.slide-header {
+  grid-column: 1 / -1;
+  margin-bottom: 20px;
+}
+
+.slide-header h2 {
+  font-size: 1.8em;
+  color: var(--earth-dark);
+  border-bottom: 2px solid var(--accent-orange);
+  padding-bottom: 10px;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: var(--sand);
+  border-radius: 8px;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 75vh;
+}
+
+.interpretation-panel {
+  background: linear-gradient(135deg, #FFF8E1 0%, var(--sand) 100%);
+  border-left: 4px solid var(--terracotta);
+  border-radius: 8px;
+  padding: 25px;
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+.interpretation-panel h3 {
+  color: var(--earth-dark);
+  font-size: 1.3em;
+  margin-bottom: 15px;
+  border-bottom: 2px solid var(--accent-brown);
+  padding-bottom: 8px;
+}
+
+.interpretation-panel h4 {
+  color: var(--terracotta);
+  font-size: 1.1em;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.interpretation-panel p,
+.interpretation-panel ul {
+  font-size: 0.95em;
+  line-height: 1.7;
+  color: var(--text-light);
+  margin-bottom: 15px;
+}
+
+.interpretation-panel ul {
+  padding-left: 20px;
+}
+
+.interpretation-panel li {
+  margin-bottom: 8px;
+}
+
+/* Conclusion Slide */
+.slide.conclusion-slide {
+  padding: 50px;
+}
+
+.slide.conclusion-slide h2 {
+  font-size: 2.5em;
+  color: var(--earth-dark);
+  margin-bottom: 30px;
+  text-align: center;
+  border-bottom: 3px solid var(--terracotta);
+  padding-bottom: 15px;
+}
+
+.slide.conclusion-slide h3 {
+  font-size: 1.6em;
+  color: var(--terracotta);
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+.slide.conclusion-slide ul {
+  font-size: 1.1em;
+  line-height: 1.8;
+  color: var(--text-light);
+  margin-left: 30px;
+}
+
+/* Navigation Controls */
+.nav-button {
+  position: fixed;
+  bottom: 40px;
+  background: var(--earth-dark);
+  color: white;
+  border: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
+  transition: all 300ms ease;
+  z-index: 1000;
+}
+
+.nav-button:hover {
+  background: var(--terracotta);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(216, 67, 21, 0.4);
+}
+
+.nav-button:active {
+  transform: scale(0.95);
+}
+
+#prev-btn {
+  left: 40px;
+}
+
+#next-btn {
+  right: 40px;
+}
+
+/* Progress Indicator */
+#progress-indicator {
+  position: fixed;
+  top: 30px;
+  right: 40px;
+  background: var(--earth-medium);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.2);
+  z-index: 1000;
+}
+
+/* Loading State */
+#loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2em;
+  color: var(--earth-dark);
+  z-index: 2000;
+}
+
+.spinner {
+  border: 5px solid var(--sand);
+  border-top: 5px solid var(--terracotta);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Scrollbar Styling */
+.interpretation-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.interpretation-panel::-webkit-scrollbar-track {
+  background: var(--sand);
+  border-radius: 4px;
+}
+
+.interpretation-panel::-webkit-scrollbar-thumb {
+  background: var(--accent-brown);
+  border-radius: 4px;
+}
+
+.interpretation-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--earth-medium);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .slide.question-slide {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
+
+  .interpretation-panel {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .slide {
+    width: 95%;
+    padding: 30px 20px;
+  }
+
+  .slide.title-slide h1 {
+    font-size: 2em;
+  }
+
+  .slide.title-slide h2 {
+    font-size: 1.3em;
+  }
+
+  .nav-button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
+
+/* Chart-specific styling */
+.chart-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Tooltip styling (for charts) */
+.chart-tooltip {
+  font-family: 'Segoe UI', sans-serif;
+  background: white !important;
+  border: 2px solid var(--earth-dark) !important;
+  border-radius: 6px !important;
+  padding: 10px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+/* Dropdown select styling */
+select {
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 2px solid var(--earth-medium);
+  background-color: white;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+select:hover {
+  border-color: var(--terracotta);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(216, 67, 21, 0.1);
+}
+
+label {
+  color: var(--text-dark);
+  font-weight: 500;
+}
