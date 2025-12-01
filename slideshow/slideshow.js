@@ -9,7 +9,7 @@ let allDataLoaded = false;
 let selectedRefugeePeriod = "2015-2019";
 let selectedAsylumPeriod = "2015-2019";
 
-// Data storage
+// Data storage - All datasets loaded for teammate use
 const data = {
   monthlyGlobal: null,
   monthlyEurope: null,
@@ -18,7 +18,10 @@ const data = {
   ageGender: null,
   personsOfConcern: null,
   asylumSeekers: null,
-  demographics: null
+  asylumSeekersMonthly: null,
+  demographics: null,
+  resettlement: null,
+  timeSeries: null
 };
 
 // Navigation functions
@@ -173,7 +176,7 @@ async function loadAllData() {
     const loading = document.getElementById('loading');
     loading.style.display = 'block';
 
-    // Load all CSV files in parallel
+    // Load all CSV files in parallel - ALL datasets available for teammates
     const [
       monthlyGlobal,
       monthlyEurope,
@@ -182,7 +185,10 @@ async function loadAllData() {
       ageGender,
       personsOfConcern,
       asylumSeekers,
-      demographics
+      asylumSeekersMonthly,
+      demographics,
+      resettlement,
+      timeSeries
     ] = await Promise.all([
       d3.csv('data/asylum_monthly_global_avg.csv'),
       d3.csv('data/asylum_monthly_europe_avg.csv'),
@@ -191,10 +197,13 @@ async function loadAllData() {
       d3.csv('data/age_gender_distribution.csv'),
       d3.csv('data/persons_of_concern.csv'),
       d3.csv('data/asylum_seekers.csv'),
-      d3.csv('data/demographics.csv')
+      d3.csv('data/asylum_seekers_monthly.csv'),
+      d3.csv('data/demographics.csv'),
+      d3.csv('data/resettlement.csv'),
+      d3.csv('data/time_series.csv')
     ]);
 
-    // Store in global data object
+    // Store in global data object - All available for use
     data.monthlyGlobal = monthlyGlobal;
     data.monthlyEurope = monthlyEurope;
     data.window3yr = window3yr;
@@ -202,7 +211,10 @@ async function loadAllData() {
     data.ageGender = ageGender;
     data.personsOfConcern = personsOfConcern;
     data.asylumSeekers = asylumSeekers;
+    data.asylumSeekersMonthly = asylumSeekersMonthly;
     data.demographics = demographics;
+    data.resettlement = resettlement;
+    data.timeSeries = timeSeries;
 
     allDataLoaded = true;
     loading.style.display = 'none';

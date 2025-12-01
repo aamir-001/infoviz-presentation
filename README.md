@@ -2,6 +2,8 @@
 
 An interactive data visualization slideshow presenting analysis of global refugee and asylum seeker patterns from UNHCR data (2000-2023).
 
+> **📢 For Teammates:** All 11 datasets are pre-loaded and ready to use! Jump to [Adding New Slides](#-adding-new-slides-for-teammates) to get started.
+
 ## 🚀 Quick Start - Running the App
 
 ### Prerequisites
@@ -56,24 +58,26 @@ Navigate to: **`http://localhost:8000`**
 ## 📁 Project Structure
 
 ```
-slideshow/
-├── index.html          # Main HTML structure (12 slides)
-├── slideshow.js        # Navigation logic and data loading
-├── charts.js           # D3.js visualization functions (8 charts)
-├── style.css           # Warm earth tone styling
-├── data/               # CSV and GeoJSON data files
-│   ├── asylum_monthly_global_avg.csv
-│   ├── asylum_monthly_europe_avg.csv
-│   ├── asylum_3yr_window.csv
-│   ├── asylum_5yr_window.csv
-│   ├── age_gender_distribution.csv
-│   ├── asylum_seekers.csv
-│   ├── persons_of_concern.csv
-│   ├── demographics.csv
-│   ├── countries-110m.json (TopoJSON world map)
-│   └── ...
-├── README.md           # This file
-└── QUICKSTART.md       # Quick reference guide
+infoviz-presentation/
+├── README.md           # This file - Instructions and documentation
+└── slideshow/          # Main application folder
+    ├── index.html      # Main HTML structure (12 slides)
+    ├── slideshow.js    # Navigation logic and data loading (ALL datasets loaded)
+    ├── charts.js       # D3.js visualization functions (8 charts)
+    ├── style.css       # Warm earth tone styling
+    └── data/           # All CSV and GeoJSON data files (11 datasets)
+        ├── asylum_monthly_global_avg.csv
+        ├── asylum_monthly_europe_avg.csv
+        ├── asylum_3yr_window.csv
+        ├── asylum_5yr_window.csv
+        ├── asylum_seekers.csv
+        ├── asylum_seekers_monthly.csv
+        ├── age_gender_distribution.csv
+        ├── persons_of_concern.csv
+        ├── demographics.csv
+        ├── resettlement.csv
+        ├── time_series.csv
+        └── countries-110m.json (TopoJSON world map)
 ```
 
 ---
@@ -107,54 +111,74 @@ slideshow/
 
 Follow these steps to add slides for Q1-Q4 or Q8-Q10:
 
-### Step 1: Prepare Your Data
+### Available Datasets
 
-1. **Export CSV** from Observable/your analysis tool
-2. **Save to** `slideshow/data/` folder
-3. **Verify format:**
-   - First row = column headers
-   - Consistent delimiters (commas)
-   - No missing values (or handle with `|| 0`)
+**All datasets are pre-loaded and ready to use!** You don't need to add new CSV files.
 
-### Step 2: Load Your Data in `slideshow.js`
+| Dataset Variable | CSV File | Description |
+|-----------------|----------|-------------|
+| `data.monthlyGlobal` | asylum_monthly_global_avg.csv | Global monthly asylum averages |
+| `data.monthlyEurope` | asylum_monthly_europe_avg.csv | Europe monthly asylum averages |
+| `data.window3yr` | asylum_3yr_window.csv | 3-year rolling window analysis |
+| `data.window5yr` | asylum_5yr_window.csv | 5-year rolling window analysis |
+| `data.ageGender` | age_gender_distribution.csv | Age and gender demographics |
+| `data.personsOfConcern` | persons_of_concern.csv | Refugees and persons of concern |
+| `data.asylumSeekers` | asylum_seekers.csv | Asylum seeker statistics |
+| `data.asylumSeekersMonthly` | asylum_seekers_monthly.csv | Monthly asylum seeker data |
+| `data.demographics` | demographics.csv | Demographic information |
+| `data.resettlement` | resettlement.csv | Resettlement data |
+| `data.timeSeries` | time_series.csv | Time series analysis data |
 
-**A. Add data storage variable (around line 13):**
+**You can use any combination of these datasets in your visualizations!**
+
+### Step 1: Choose Your Dataset(s)
+
+1. **Review available datasets** in the table above
+2. **Inspect the data structure** using browser console:
+   ```javascript
+   console.log(data.resettlement);  // Example: check resettlement data
+   ```
+3. **Plan your visualization** based on the data columns available
+
+### Step 2: Access Pre-Loaded Data
+
+**All datasets are already loaded!** No need to modify data loading code.
+
+The following datasets are available in the `data` object:
+
 ```javascript
-const data = {
-  monthlyGlobal: null,
-  monthlyEurope: null,
-  // ... existing variables
-  yourQuestionData: null,  // ADD THIS
-};
+// Access any of these in your chart functions:
+data.monthlyGlobal          // asylum_monthly_global_avg.csv
+data.monthlyEurope          // asylum_monthly_europe_avg.csv
+data.window3yr              // asylum_3yr_window.csv
+data.window5yr              // asylum_5yr_window.csv
+data.ageGender              // age_gender_distribution.csv
+data.personsOfConcern       // persons_of_concern.csv
+data.asylumSeekers          // asylum_seekers.csv
+data.asylumSeekersMonthly   // asylum_seekers_monthly.csv
+data.demographics           // demographics.csv
+data.resettlement           // resettlement.csv
+data.timeSeries             // time_series.csv
 ```
 
-**B. Load CSV file (around line 185):**
+**Example usage in your chart function:**
 ```javascript
-async function loadAllData() {
-  try {
-    const [
-      monthlyGlobal,
-      monthlyEurope,
-      // ... existing loads
-      yourQuestionData,  // ADD THIS
-    ] = await Promise.all([
-      d3.csv('data/asylum_monthly_global_avg.csv'),
-      d3.csv('data/asylum_monthly_europe_avg.csv'),
-      // ... existing loads
-      d3.csv('data/your_file.csv'),  // ADD THIS
-    ]);
+export function createYourChart(data, containerId) {
+  // Use any pre-loaded dataset
+  const myData = data.resettlement;  // Access resettlement data
 
-    data.monthlyGlobal = monthlyGlobal;
-    // ... existing assignments
-    data.yourQuestionData = yourQuestionData;  // ADD THIS
+  // Process and visualize...
+}
 ```
 
-**C. Update total slides (line 7):**
+### Step 3: Update Slide Count and Add Rendering
+
+**A. Update total slides (line 7 in `slideshow.js`):**
 ```javascript
 const totalSlides = 13;  // INCREMENT from 12 to 13
 ```
 
-**D. Add rendering case (around line 60):**
+**B. Add rendering case (around line 60 in `slideshow.js`):**
 ```javascript
 function renderChartsForSlide(slideNum) {
   if (!allDataLoaded) return;
@@ -163,15 +187,16 @@ function renderChartsForSlide(slideNum) {
     // ... existing cases
 
     case 13:  // Your new slide number
-      if (data.yourQuestionData) {
-        charts.createQ8YourChart(data.yourQuestionData, '#chart-q8');
-      }
+      // Pass the entire data object to access any dataset
+      charts.createQ8YourChart(data, '#chart-q8');
       break;
   }
 }
 ```
 
-### Step 3: Create Chart Function in `charts.js`
+**Note:** Pass the entire `data` object to your chart function so you can access any dataset you need.
+
+### Step 4: Create Chart Function in `charts.js`
 
 Add your chart function at the end of `charts.js`:
 
@@ -180,9 +205,12 @@ Add your chart function at the end of `charts.js`:
 // Q8 - Your Question Title
 // ============================================================
 
-export function createQ8YourChart(data, containerId) {
+export function createQ8YourChart(dataObj, containerId) {
   const container = d3.select(containerId);
   container.selectAll("*").remove();  // Clear previous
+
+  // Access the specific dataset you need
+  const myData = dataObj.resettlement;  // Or any other dataset
 
   // Set dimensions
   const margin = { top: 60, right: 30, bottom: 60, left: 80 };
@@ -198,7 +226,7 @@ export function createQ8YourChart(data, containerId) {
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // Process your data
-  const chartData = data.map(d => ({
+  const chartData = myData.map(d => ({
     // Transform your data here
     x: d.columnName,
     y: +d.value  // Convert to number
@@ -252,7 +280,7 @@ export function createQ8YourChart(data, containerId) {
 - Pie charts: `createAgeGenderPieCharts()`
 - Maps: `createRefugeeHostingMap()`, `createAsylumApplicationsMap()`
 
-### Step 4: Add HTML Slide in `index.html`
+### Step 5: Add HTML Slide in `index.html`
 
 Add before the conclusion slide (currently slide 12):
 
@@ -296,7 +324,7 @@ Add before the conclusion slide (currently slide 12):
 <div class="slide conclusion-slide" data-slide="13">
 ```
 
-### Step 5: Test Your Changes
+### Step 6: Test Your Changes
 
 1. **Hard refresh browser:** `Ctrl + Shift + R` (Windows) or `Cmd + Shift + R` (Mac)
 2. **Check console:** Press F12, look for errors
