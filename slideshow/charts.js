@@ -9,9 +9,9 @@ export function createGlobalMonthlyChart(data, containerId) {
   container.selectAll("*").remove();
 
   // Set up dimensions and margins
-  const margin = { top: 60, right: 30, bottom: 60, left: 80 };
-  const width = 650 - margin.left - margin.right;
-  const height = 380 - margin.top - margin.bottom;
+  const width = 650;
+  const height = 380;
+  const margin = { top: 45, right: 30, bottom: 50, left: 60 };
 
   // Define month order
   const monthOrder = [
@@ -25,81 +25,100 @@ export function createGlobalMonthlyChart(data, containerId) {
     Value: +d.Value
   }));
 
-  // Create scales
-  const xScale = d3.scaleBand()
-    .domain(monthOrder)
-    .range([0, width])
-    .padding(0.1);
-
-  const yScale = d3.scaleLinear()
-    .domain([0, d3.max(chartData, d => d.Value)])
-    .nice()
-    .range([height, 0]);
-
   // Create SVG container
   const svg = container.append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr("width", width)
+    .attr("height", height);
 
-  const g = svg.append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
+  // Create scales
+  const x = d3.scalePoint()
+    .domain(chartData.map(d => d.Month))
+    .range([margin.left, width - margin.right]);
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(chartData, d => d.Value) * 1.1])
+    .nice()
+    .range([height - margin.bottom, margin.top]);
 
   // Add X axis
-  g.append("g")
-    .attr("transform", `translate(0,${height})`)
-    .call(d3.axisBottom(xScale))
+  svg.append("g")
+    .attr("transform", `translate(0,${height - margin.bottom})`)
+    .call(d3.axisBottom(x))
     .selectAll("text")
-    .attr("transform", "rotate(-45)")
-    .style("text-anchor", "end");
+    .style("font-size", "10px");
 
   // Add Y axis
-  g.append("g")
-    .call(d3.axisLeft(yScale));
+  svg.append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y))
+    .selectAll("text")
+    .style("font-size", "11px");
 
   // Add X axis label
-  g.append("text")
+  svg.append("text")
     .attr("text-anchor", "middle")
     .attr("x", width / 2)
-    .attr("y", height + 50)
+    .attr("y", height - 10)
+    .style("font-size", "12px")
     .text("Month");
 
   // Add Y axis label
-  g.append("text")
+  svg.append("text")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(-90)")
-    .attr("x", -height / 2)
-    .attr("y", -60)
+    .attr("x", -(height / 2))
+    .attr("y", 15)
+    .style("font-size", "12px")
     .text("Avg Asylum Applications");
 
-  // Create line generator
-  const line = d3.line()
-    .x(d => xScale(d.Month) + xScale.bandwidth() / 2)
-    .y(d => yScale(d.Value));
-
   // Add the line
-  g.append("path")
+  svg.append("path")
     .datum(chartData)
     .attr("fill", "none")
     .attr("stroke", "steelblue")
     .attr("stroke-width", 2)
-    .attr("d", line);
+    .attr("d", d3.line()
+      .x(d => x(d.Month))
+      .y(d => y(d.Value))
+    );
 
-  // Add points
-  g.selectAll(".point")
+  // Create tooltip
+  const tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "monthly-global-tooltip")
+    .style("position", "absolute")
+    .style("padding", "10px")
+    .style("background", "white")
+    .style("border", "2px solid steelblue")
+    .style("border-radius", "6px")
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .style("z-index", 10000)
+    .style("font-size", "14px");
+
+  // Add points with tooltips
+  svg.selectAll(".point")
     .data(chartData)
-    .join("circle")
+    .enter()
+    .append("circle")
     .attr("class", "point")
-    .attr("cx", d => xScale(d.Month) + xScale.bandwidth() / 2)
-    .attr("cy", d => yScale(d.Value))
+    .attr("cx", d => x(d.Month))
+    .attr("cy", d => y(d.Value))
     .attr("r", 4)
     .attr("fill", "steelblue")
-    .append("title")
-    .text(d => `Month: ${d.Month}\nValue: ${d.Value}`);
+    .style("cursor", "pointer")
+    .on("mousemove", (event, d) => {
+      tooltip.style("opacity", 1)
+        .html(`<b>${d.Month}</b><br>Applications: <b>${d.Value.toFixed(1)}</b>`)
+        .style("left", `${event.pageX + 15}px`)
+        .style("top", `${event.pageY + 15}px`);
+    })
+    .on("mouseout", () => tooltip.style("opacity", 0));
 
   // Add title
   svg.append("text")
-    .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", 30)
+    .attr("x", width / 2)
+    .attr("y", 20)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-weight", "bold")
@@ -139,7 +158,21 @@ export function createEuropeMonthlyChart(data, containerId) {
           .y(d => y(d.Value))
       );
 
-  // ---- POINTS ----
+  // Create tooltip
+  const tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "monthly-europe-tooltip")
+    .style("position", "absolute")
+    .style("padding", "10px")
+    .style("background", "white")
+    .style("border", "2px solid #c0392b")
+    .style("border-radius", "6px")
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .style("z-index", 10000)
+    .style("font-size", "14px");
+
+  // ---- POINTS with tooltips ----
   svg.selectAll("circle")
       .data(data)
       .enter()
@@ -147,7 +180,15 @@ export function createEuropeMonthlyChart(data, containerId) {
       .attr("cx", d => x(d.Month))
       .attr("cy", d => y(d.Value))
       .attr("r", 4)
-      .attr("fill", "#c0392b");
+      .attr("fill", "#c0392b")
+      .style("cursor", "pointer")
+      .on("mousemove", (event, d) => {
+        tooltip.style("opacity", 1)
+          .html(`<b>${d.Month}</b><br>Applications: <b>${d.Value.toFixed(1)}</b>`)
+          .style("left", `${event.pageX + 15}px`)
+          .style("top", `${event.pageY + 15}px`);
+      })
+      .on("mouseout", () => tooltip.style("opacity", 0));
 
   // ---- AXES ----
   svg.append("g")
@@ -194,7 +235,9 @@ export function create3YearWindowChart(data, containerId) {
       .attr("height", height)
       .style("cursor", "crosshair");
 
-  const groups = Array.from(d3.group(data, d => d.Window_3yr));
+  // Remove the 2017–2019 window from visualization
+  const filteredData = data.filter(d => d.Window_3yr !== "2017-2019");
+  const groups = Array.from(d3.group(filteredData, d => d.Window_3yr));
   const months = groups[0][1].map(d => d.Month);
 
   const x = d3.scalePoint()
@@ -218,7 +261,7 @@ export function create3YearWindowChart(data, containerId) {
   // -------------------
   const tooltip = d3.select(document.body)
     .append("div")
-    .attr("class", "chart-tooltip")
+    .attr("class", "chart-3yr-tooltip")
     .style("position", "fixed")
     .style("background", "white")
     .style("border", "1px solid #ccc")
@@ -227,12 +270,13 @@ export function create3YearWindowChart(data, containerId) {
     .style("font-size", "12px")
     .style("pointer-events", "none")
     .style("box-shadow", "0px 2px 6px rgba(0,0,0,0.15)")
-    .style("opacity", 0);
+    .style("opacity", 0)
+    .style("z-index", 10000);
 
   // -------------------
   // DRAW LINES WITH HOVER POINTS
   // -------------------
-  groups.forEach(([label, rows], idx) => {
+  groups.forEach(([label, rows]) => {
     // Line
     svg.append("path")
       .datum(rows)
@@ -244,17 +288,17 @@ export function create3YearWindowChart(data, containerId) {
         .y(d => y(d.Value))
       );
 
-    // Hover dots
-    svg.selectAll(`.dot-3yr-${idx}`)
+    // Hover dots - drawn AFTER lines to be on top
+    svg.selectAll(`.dot-${label.replace(/[^a-zA-Z0-9]/g, '_')}`)
       .data(rows)
       .enter()
       .append("circle")
-      .attr("class", `dot-3yr-${idx}`)
       .attr("cx", d => x(d.Month))
       .attr("cy", d => y(d.Value))
       .attr("r", 5)
       .attr("fill", color(label))
       .attr("opacity", 0)
+      .style("cursor", "pointer")
       .on("mouseover", (event, d) => {
           tooltip.style("opacity", 1);
           tooltip.html(
@@ -277,7 +321,13 @@ export function create3YearWindowChart(data, containerId) {
   // -------------------
   svg.append("g")
       .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x));
+      .call(d3.axisBottom(x))
+    .selectAll("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-45)")
+      .attr("dx", "-0.5em")
+      .attr("dy", "0.1em")
+      .style("font-size", "11px");
 
   svg.append("g")
       .attr("transform", `translate(${margin.left},0)`)
@@ -287,7 +337,7 @@ export function create3YearWindowChart(data, containerId) {
   svg.append("text")
       .attr("text-anchor", "middle")
       .attr("x", width / 2)
-      .attr("y", height - 15)
+      .attr("y", height - 5)
       .style("font-size", "13px")
       .text("Month");
 
@@ -365,18 +415,19 @@ export function create5YearWindowChart(data, containerId) {
   // -------------------
   // TOOLTIP
   // -------------------
-  const tooltip = d3.select(document.body)
+  const tooltip = d3.select("body")
     .append("div")
-    .attr("class", "chart-tooltip")
-    .style("position", "fixed")
+    .attr("class", "window-5yr-tooltip")
+    .style("position", "absolute")
     .style("background", "white")
-    .style("border", "1px solid #ccc")
-    .style("padding", "6px 10px")
-    .style("border-radius", "4px")
-    .style("font-size", "12px")
+    .style("border", "2px solid #666")
+    .style("border-radius", "6px")
+    .style("padding", "10px")
+    .style("font-size", "13px")
     .style("pointer-events", "none")
-    .style("box-shadow", "0px 2px 6px rgba(0,0,0,0.15)")
-    .style("opacity", 0);
+    .style("box-shadow", "0px 2px 8px rgba(0,0,0,0.2)")
+    .style("opacity", 0)
+    .style("z-index", 10000);
 
   // -------------------
   // DRAW LINES + HOVER POINTS
@@ -393,7 +444,7 @@ export function create5YearWindowChart(data, containerId) {
         .y(d => y(d.Value))
       );
 
-    // Hover dots (invisible except on hover)
+    // Visible hover dots
     svg.selectAll(`.dot-5yr-${idx}`)
       .data(rows)
       .enter()
@@ -401,22 +452,24 @@ export function create5YearWindowChart(data, containerId) {
       .attr("class", `dot-5yr-${idx}`)
       .attr("cx", d => x(d.Month))
       .attr("cy", d => y(d.Value))
-      .attr("r", 5)
+      .attr("r", 4)
       .attr("fill", color(label))
-      .attr("opacity", 0)
-      .on("mouseover", (event, d) => {
-          tooltip.style("opacity", 1);
-          tooltip.html(
-            `<b>${label}</b><br>
-             Month: ${d.Month}<br>
-             Value: ${d.Value.toFixed(2)}`
-          );
+      .attr("stroke", "white")
+      .attr("stroke-width", 1.5)
+      .style("cursor", "pointer")
+      .on("mouseover", function(event, d) {
+          d3.select(this).attr("r", 6);
+          tooltip.style("opacity", 1)
+            .html(`<b>${label}</b><br>Month: ${d.Month}<br>Value: <b>${d.Value.toFixed(1)}</b>`);
       })
       .on("mousemove", (event) => {
-          tooltip.style("left", (event.clientX + 12) + "px")
-                 .style("top", (event.clientY - 20) + "px");
+          tooltip.style("left", (event.pageX + 15) + "px")
+                 .style("top", (event.pageY + 15) + "px");
       })
-      .on("mouseout", () => tooltip.style("opacity", 0));
+      .on("mouseout", function() {
+          d3.select(this).attr("r", 4);
+          tooltip.style("opacity", 0);
+      });
   });
 
   // -------------------
@@ -492,16 +545,17 @@ export function createAgeGenderPieCharts(data, containerId) {
   const numCharts = data.length;
   const numRows = Math.ceil(numCharts / chartsPerRow);
 
-  const totalWidth = chartsPerRow * pieSize + (chartsPerRow - 1) * padding;
+  const totalWidth = chartsPerRow * pieSize + (chartsPerRow - 1) * padding + 120; // Extra space for legend
   const totalHeight = numRows * (pieSize + 60);
 
   const svg = container.append("svg")
     .attr("width", totalWidth)
     .attr("height", totalHeight);
 
+  // Color scale: blue for Male, pink for Female
   const color = d3.scaleOrdinal()
     .domain(["Male", "Female"])
-    .range(["#ff9800", "#2196f3"]);
+    .range(["#2196f3", "#c90076"]);
 
   const pie = d3.pie()
     .value(d => d.value)
@@ -510,6 +564,20 @@ export function createAgeGenderPieCharts(data, containerId) {
   const arc = d3.arc()
     .innerRadius(0)
     .outerRadius(radius);
+
+  // Create tooltip
+  const tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "pie-chart-tooltip")
+    .style("position", "absolute")
+    .style("background", "white")
+    .style("border", "2px solid #666")
+    .style("border-radius", "4px")
+    .style("padding", "8px")
+    .style("font-size", "12px")
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .style("z-index", 1000);
 
   data.forEach((ageGroup, i) => {
     const row = Math.floor(i / chartsPerRow);
@@ -525,6 +593,8 @@ export function createAgeGenderPieCharts(data, containerId) {
       { gender: "Female", value: +ageGroup["Female Count"] }
     ];
 
+    const total = chartData.reduce((sum, d) => sum + d.value, 0);
+
     const arcs = g.selectAll(".arc")
       .data(pie(chartData))
       .join("g")
@@ -535,9 +605,19 @@ export function createAgeGenderPieCharts(data, containerId) {
       .attr("fill", d => color(d.data.gender))
       .attr("stroke", "white")
       .attr("stroke-width", 2)
-      .append("title")
-      .text(d => `${d.data.gender}: ${d.data.value.toLocaleString()}`);
+      .on("mousemove", function(event, d) {
+        const percentage = ((d.data.value / total) * 100).toFixed(1);
+        tooltip
+          .style("opacity", 1)
+          .html(`<strong>${d.data.gender}</strong><br/>Count: ${d.data.value.toLocaleString()}<br/>Percentage: ${percentage}%`)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", function() {
+        tooltip.style("opacity", 0);
+      });
 
+    // Age group label
     svg.append("text")
       .attr("x", x)
       .attr("y", y - pieSize / 2 - 10)
@@ -547,11 +627,12 @@ export function createAgeGenderPieCharts(data, containerId) {
       .text(ageGroup["Age Group"]);
   });
 
+  // Legend positioned at the right
   const legend = svg.append("g")
-    .attr("transform", `translate(${totalWidth - 60}, 10)`);
+    .attr("transform", `translate(${chartsPerRow * pieSize + (chartsPerRow - 1) * padding + 40}, 30)`);
 
   const legendItems = legend.selectAll(".legend-item")
-    .data(["Female", "Male"])
+    .data(["Male", "Female"])
     .join("g")
     .attr("class", "legend-item")
     .attr("transform", (d, i) => `translate(0, ${i * 25})`);
@@ -575,7 +656,7 @@ export function createTop10RefugeeHostsChart(data, containerId) {
   const container = d3.select(containerId);
   container.selectAll("*").remove();
 
-  const margin = { top: 20, right: 30, bottom: 40, left: 200 };
+  const margin = { top: 45, right: 50, bottom: 40, left: 220 };
   const width = 900;
   const height = 450;
 
@@ -592,26 +673,71 @@ export function createTop10RefugeeHostsChart(data, containerId) {
     .range([margin.top + 20, height - margin.bottom])
     .padding(0.2);
 
+  // Top axis
   svg.append("g")
     .attr("transform", `translate(0,${margin.top + 20})`)
-    .call(d3.axisTop(x).ticks(5));
+    .call(d3.axisTop(x).ticks(5).tickFormat(d3.format(",")))
+    .selectAll("text")
+    .style("font-size", "12px");
 
+  // Left axis
   svg.append("g")
     .attr("transform", `translate(${margin.left},0)`)
-    .call(d3.axisLeft(y));
+    .call(d3.axisLeft(y))
+    .selectAll("text")
+    .style("font-size", "13px");
 
+  // Create tooltip
+  const tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "refugee-bar-tooltip")
+    .style("position", "absolute")
+    .style("padding", "10px")
+    .style("background", "white")
+    .style("border", "2px solid #4a90e2")
+    .style("border-radius", "6px")
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .style("z-index", 10000)
+    .style("font-size", "14px");
+
+  // Draw bars with tooltips
   svg.selectAll("rect")
     .data(data)
-    .enter().append("rect")
+    .enter()
+    .append("rect")
     .attr("x", margin.left)
     .attr("y", d => y(d.country))
     .attr("width", d => x(d.total) - margin.left)
     .attr("height", y.bandwidth())
-    .attr("fill", "#4a90e2");
+    .attr("fill", "#4a90e2")
+    .on("mousemove", (event, d) => {
+      tooltip.style("opacity", 1)
+        .html(`<b>${d.country}</b><br>Refugees Hosted: <b>${d.total.toLocaleString()}</b>`)
+        .style("left", `${event.pageX + 15}px`)
+        .style("top", `${event.pageY + 15}px`);
+    })
+    .on("mouseout", () => tooltip.style("opacity", 0));
 
+  // Add value labels at end of bars
+  svg.selectAll(".label")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class", "label")
+    .attr("x", d => x(d.total) + 5)
+    .attr("y", d => y(d.country) + y.bandwidth() / 2)
+    .attr("dy", "0.35em")
+    .style("font-size", "12px")
+    .style("fill", "#5D4037")
+    .style("font-weight", "500")
+    .text(d => d3.format(".2s")(d.total).replace("G", "B"));
+
+  // Title
   svg.append("text")
-    .attr("x", margin.left)
-    .attr("y", 12)
+    .attr("x", width / 2)
+    .attr("y", margin.top - 15)
+    .attr("text-anchor", "middle")
     .attr("font-size", "20px")
     .attr("font-weight", "bold")
     .text("Top 10 Refugee-Hosting Countries (Total Across All Years)");
@@ -621,7 +747,7 @@ export function createTop10AsylumHostsChart(data, containerId) {
   const container = d3.select(containerId);
   container.selectAll("*").remove();
 
-  const margin = { top: 45, right: 30, bottom: 40, left: 220 };
+  const margin = { top: 45, right: 50, bottom: 40, left: 220 };
   const width = 900;
   const height = 450;
 
@@ -638,14 +764,35 @@ export function createTop10AsylumHostsChart(data, containerId) {
     .range([margin.top + 20, height - margin.bottom])
     .padding(0.2);
 
+  // Top axis
   svg.append("g")
     .attr("transform", `translate(0,${margin.top + 20})`)
-    .call(d3.axisTop(x).ticks(5).tickFormat(d3.format(",")));
+    .call(d3.axisTop(x).ticks(5).tickFormat(d3.format(",")))
+    .selectAll("text")
+    .style("font-size", "12px");
 
+  // Left axis
   svg.append("g")
     .attr("transform", `translate(${margin.left},0)`)
-    .call(d3.axisLeft(y));
+    .call(d3.axisLeft(y))
+    .selectAll("text")
+    .style("font-size", "13px");
 
+  // Create tooltip
+  const tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "asylum-bar-tooltip")
+    .style("position", "absolute")
+    .style("padding", "10px")
+    .style("background", "white")
+    .style("border", "2px solid #F39C12")
+    .style("border-radius", "6px")
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .style("z-index", 10000)
+    .style("font-size", "14px");
+
+  // Draw bars with tooltips
   svg.selectAll("rect")
     .data(data)
     .enter()
@@ -654,8 +801,30 @@ export function createTop10AsylumHostsChart(data, containerId) {
     .attr("y", d => y(d.country))
     .attr("width", d => x(d.total) - margin.left)
     .attr("height", y.bandwidth())
-    .attr("fill", "#F39C12");
+    .attr("fill", "#F39C12")
+    .on("mousemove", (event, d) => {
+      tooltip.style("opacity", 1)
+        .html(`<b>${d.country}</b><br>Asylum Applications: <b>${d.total.toLocaleString()}</b>`)
+        .style("left", `${event.pageX + 15}px`)
+        .style("top", `${event.pageY + 15}px`);
+    })
+    .on("mouseout", () => tooltip.style("opacity", 0));
 
+  // Add value labels at end of bars
+  svg.selectAll(".label")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class", "label")
+    .attr("x", d => x(d.total) + 5)
+    .attr("y", d => y(d.country) + y.bandwidth() / 2)
+    .attr("dy", "0.35em")
+    .style("font-size", "12px")
+    .style("fill", "#5D4037")
+    .style("font-weight", "500")
+    .text(d => d3.format(".2s")(d.total).replace("G", "B"));
+
+  // Title
   svg.append("text")
     .attr("x", width / 2)
     .attr("y", margin.top - 15)
